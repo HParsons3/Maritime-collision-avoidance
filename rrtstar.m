@@ -23,29 +23,52 @@ function [startloc, goalloc] = generateMap(entitycount, mapsize)
     speed = randi(5,entitycount,1);
     hold on
     scatter(startloc(:,1),startloc(:,2),'d')
-    scatter(goalloc(:,1),goalloc(:,2),'.')
+    scatter(goalloc(:,1),goalloc(:,2),'o')
     for n = 1:entitycount
         plot([startloc(n,1), goalloc(n,1)], [startloc(n,2), goalloc(n,2)])
-        o = goalloc(n,1)-startloc(n,1); 
-        a = goalloc(n,2)-startloc(n,2);
+        o = goalloc(n,2)-startloc(n,2); 
+        a = goalloc(n,1)-startloc(n,1);
         h = sqrt(a^2+o^2); %Distance to target
         theta(n) = atand(o/a); 
         if a <= 0 && o <= 0 %Angle to target
-            theta(n) = 90+theta(n);
+            theta(n) = 270-theta(n);
         elseif a <= 0 && o >= 0
-            theta(n) = 90+theta(n);
+            theta(n) = 270-theta(n);
         elseif a >= 0 && o <= 0
-            theta(n) = 270+theta(n);
+            theta(n) = 90-theta(n);
         elseif a >= 0 && o >= 0
-            theta(n) = 270+theta(n);
+            theta(n) = 90-theta(n);
         end
     end
-%     for t = 0:(mapsize^2)
-%         for n = 1:entitycount
-%             location
-%         end
-%     end
-    keyboard
+    for t = 0:50
+        for n = 1:entitycount
+            location(n,:) = [startloc(n,1)+sind(theta(n))*speed(n)*t, startloc(n,2)+cosd(theta(n))*speed(n)*t];
+            if theta(n) >= 0 && theta(n) < 90
+                if location(n,1) >= goalloc(n,1) && location(n,2) >= goalloc(n,2)
+                    location(n,:) = goalloc(n,:);
+                end
+            end
+            if theta(n) >= 90 && theta(n) < 180
+                if location(n,1) >= goalloc(n,1) && location(n,2) <= goalloc(n,2)
+                    location(n,:) = goalloc(n,:);
+                end
+            end
+            if theta(n) >= 180 && theta(n) < 270
+                if location(n,1) <= goalloc(n,1) && location(n,2) <= goalloc(n,2)
+                    location(n,:) = goalloc(n,:);
+                end
+            end
+            if theta(n) >= 270 && theta(n) < 360
+                if location(n,1) <= goalloc(n,1) && location(n,2) >= goalloc(n,2)
+                    location(n,:) = goalloc(n,:);
+                end
+            end
+%            locationy = startloc(n,2)+cosd(theta(n))*speed(n);
+        end
+        scatter(location(:,1),location(:,2),'.')
+        keyboard
+    end
+%    keyboard
 end
 
 function path = createPath(tree1, tree2, count, map)
