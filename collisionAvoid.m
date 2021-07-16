@@ -7,8 +7,8 @@ function path = collisionAvoid(locationA, locationB, speedA, speedB, goalA, goal
     if count >= 10000
         path = [0,0];
     else
-        count
-        epsilon = speedA; %Epsilon is the speed of the vessel
+%        epsilon = speedA; %Epsilon is the speed of the vessel
+        epsilon = 1;
         random = [((rand()-0.5)*50)+tree1(1,1), ((rand()-0.5)*50)+tree1(1,2)]; %Find random location
         mindistance = 1000000; %Preallocate
         for i = 1:count %Check each node in tree to find closest
@@ -40,9 +40,13 @@ function path = collisionAvoid(locationA, locationB, speedA, speedB, goalA, goal
                     j = 1;
                     k = count;
                     while k ~= 0
-                        path(j,:) = [tree1(k,1),tree1(k,2)]; %Follow the tree to the root
+                        temppath(j,:) = [tree1(k,1),tree1(k,2)]; %Follow the tree to the root
                         j = j+1;
                         k = tree1(k,3);
+                    end
+ %                   keyboard
+                    for a = 1:height(temppath)
+                            path(a,:) = temppath((height(temppath)-a)+1,:);
                     end
                 else
                     path = collisionAvoid(locationA, locationB, speedA, speedB, goalA, goalB, count, tree1); %Continue pathing

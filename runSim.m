@@ -17,8 +17,8 @@
 clear all
 close all
 
-entitycount = 20;
-mapsize = 50;
+entitycount = 10;
+mapsize = 20;
 % rrt(startloc, goalloc);
 launchSim(entitycount,mapsize)
 
@@ -100,11 +100,14 @@ function [startloc, goalloc] = generateMap(entitycount, mapsize)
     end
     %
     flag1 = 0;
-    for t = 1:i-1 %Up to 50 ticks
+    for t = 1:(100-1) %Until the last path is finished, or it times out
         for n = 1:entitycount %For every entity
             if t > 1 %Start saving old locations after first tick
                 locationold(n,:) = location(n,:);
                 location(n,:) = path(n,:,t);
+                if location(n,:) == [0,0]
+                    location(n,:) = locationold(n,:);
+                end
                 if n > 1
                     if locationold(n,:) == location(n,:)
                     else
@@ -113,17 +116,105 @@ function [startloc, goalloc] = generateMap(entitycount, mapsize)
                             else
                                 intersection = findIntersection(locationold(n,:),location(n,:),locationold(j,:),location(j,:));
                                 if intersection == 1
+%                                    keyboard
                                     if (theta(n)-theta(j) <= -190 && theta(n)-theta(j) > -315) || theta(n)-theta(j) >= 45 && theta(n)-theta(j) < 170
                                         intersecttype = 1; %Starboard: Ship n must move
+                                        location(n,:) = locationold(n,:); %Step back
+                                        startnode = [location(n,:),0];
+                                        avoidpath = collisionAvoid(location(n,:), location(j,:), speed(n), speed(j), path(n,:,t+1), goalloc(j,:), 1, startnode);
+%                                        keyboard
+                                        for k = t+1:i-1
+                                            backuppath(k-t,:) = path(n,:,k);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(n,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(n,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t+(height(avoidpath)):i-2+height(avoidpath)
+ %                                           keyboard
+                                            path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                                        end
+                                        
                                     elseif abs(theta(n)-theta(j)) >= 170 && abs(theta(n)-theta(j)) < 190
+                                        location(n,:) = locationold(n,:); %Step back
+                                        startnode = [location(n,:),0];
+                                        avoidpath = collisionAvoid(location(n,:), location(j,:), speed(n), speed(j), path(n,:,t+1), goalloc(j,:), 1, startnode);
+%                                        keyboard
+                                        for k = t+1:i-1
+                                            backuppath(k-t,:) = path(n,:,k);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(n,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(n,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t+(height(avoidpath)):i-2+height(avoidpath)
+%                                            keyboard
+                                            path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                                        end
+                                        location(j,:) = locationold(j,:); %Step back
+                                        startnode = [location(j,:),0];
+                                        avoidpath = collisionAvoid(location(j,:), location(n,:), speed(j), speed(n), path(j,:,t+1), goalloc(n,:), 1, startnode);
+%                                        keyboard
+                                        for k = t+1:i-1
+                                            backuppath(k-t,:) = path(j,:,k);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(j,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(j,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t+(height(avoidpath)):i-2+height(avoidpath)
+%                                            keyboard
+                                            path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                                        end
                                         intersecttype = 2; %head-on: Both must move
                                     elseif abs(theta(n)-theta(j)) >= -45 && abs(theta(n)-theta(j)) < 45
                                         intersecttype = 3; %Overtake: ship j must move
+                                        location(j,:) = locationold(j,:); %Step back
+                                        startnode = [location(j,:),0];
+                                        avoidpath = collisionAvoid(location(j,:), location(n,:), speed(j), speed(n), path(j,:,t+1), goalloc(n,:), 1, startnode);
+%                                        keyboard
+                                        for k = t+1:i-1
+                                            backuppath(k-t,:) = path(j,:,k);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(j,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(j,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t+(height(avoidpath)):i-2+height(avoidpath)
+%                                            keyboard
+                                            path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                                        end
                                     else
                                         intersecttype = 4; %Port: Ship j must move
+                                        location(j,:) = locationold(j,:); %Step back
+                                        startnode = [location(j,:),0];
+                                        avoidpath = collisionAvoid(location(j,:), location(n,:), speed(j), speed(n), path(j,:,t+1), goalloc(n,:), 1, startnode);
+%                                        keyboard
+                                        for k = t+1:i-1
+                                            backuppath(k-t,:) = path(j,:,k);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(j,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t:(t+(height(avoidpath)-1))
+                                            path(j,:,k) = avoidpath(k-(t-1),:);
+                                        end
+                                        for k = t+(height(avoidpath)):i-2+height(avoidpath)
+%                                            keyboard
+                                            path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                                        end
                                     end
                                     flag1 = n;
                                     flag2 = j;
+                                    
                                 end
                             end
                         end
@@ -133,60 +224,27 @@ function [startloc, goalloc] = generateMap(entitycount, mapsize)
                 location(n,:) = path(n,:,t);
             end
             if t > 1 %After first tick, start plotting lines to show movement during one tick
-                h(n) = plot([location(n,1), locationold(n,1)], [location(n,2), locationold(n,2)]);
+                h1(n) = plot([location(n,1), locationold(n,1)], [location(n,2), locationold(n,2)]);
+                [~,~,d] = size(path);
+                for x = 1:d
+                    line(x,:) = [path(n,1,x),path(n,2,x)];
+                    if line(x,:) == [0,0]
+                        line(x,:) = line(x-1,:);
+                    end
+                end
+                h2(n) = plot(line(:,1),line(:,2),'.');
             end
 %            locationy = startloc(n,2)+cosd(theta(n))*speed(n);
         end
+        keyboard
 %        scatter(location(:,1),location(:,2),'.') 
         if flag1 > 0
-                    keyboard
                     flag1 = 0;
                     flag2 = 0;
         end
         if t > 1 %After first tick, start removing old lines
-            delete(h(:));
+            delete(h1(:));
+            delete(h2(:));
         end
     end
 end
-
-%createPath now a part of collisionAvoid
-
-% function path = createPath(tree1, tree2, count, map)
-%     epsilon = 50;
-%     random = [randi(1000,1), randi(1000,1)];
-%     mindistance = 1000000;
-%     for i = 1:count
-% %        keyboard
-%         distance = sqrt(((random(1)-tree1(i,1))^2)+((random(2)-tree1(i,2))^2));
-%         if distance < mindistance
-%             mindistance = distance;
-%             near = i;
-%         end
-%     end
-%     count = count+1;
-%     x = random(1)-tree1(near,1);
-%     y = random(2)-tree1(near,2);
-%     if(mindistance > 50)
-%         ratio = epsilon/mindistance;
-%         x = (x*ratio);
-%         y = (y*ratio);
-%     end
-%     newnode = [x+tree1(near,1),y+tree1(near,2),near];
-%     if x >= 1 && y >= 1 && x <= 999 && y <= 999 && map(round(x),round(y)) == 1 
-%         path = createPath(tree1, tree2, count, map);
-%     else
-%     tree1(count,:) = newnode;
-%     distance = sqrt(((newnode(1)-tree2(1))^2)+((newnode(2)-tree2(2))^2));
-%     if distance < 50
-%         j = 1;
-%         k = count;
-%         while k ~= 0
-%             path(j,:) = [tree1(k,1),tree1(k,2)];
-%             j = j+1;
-%             k = tree1(k,3);
-%         end
-%     else
-%         path = createPath(tree1, tree2, count, map);
-%     end
-%     end
-% end
