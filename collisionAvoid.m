@@ -7,8 +7,12 @@ function path = collisionAvoid(locationA, locationB, speedA, speedB, goalA, goal
     if count >= 10000
         path = [0,0];
     else
+        count
+        if count == 1
+            keyboard
+        end
 %        epsilon = speedA; %Epsilon is the speed of the vessel
-        epsilon = 1;
+        epsilon = 0.25;
         random = [((rand()-0.5)*50)+tree1(1,1), ((rand()-0.5)*50)+tree1(1,2)]; %Find random location
         mindistance = 1000000; %Preallocate
         for i = 1:count %Check each node in tree to find closest
@@ -26,7 +30,7 @@ function path = collisionAvoid(locationA, locationB, speedA, speedB, goalA, goal
         newnode = [x+tree1(near,1),y+tree1(near,2),near];
         %If the path between the nearest node and the new node crosses the
         %boundaries, then find a new point.
-    %    keyboard
+%        keyboard
         if findIntersection(tree1(near,:), newnode, locationA, locationB) == 1 || findIntersection(tree1(near,:), newnode, locationB, goalB) == 1
             path = collisionAvoid(locationA, locationB, speedA, speedB, goalA, goalB, count, tree1); 
         else
@@ -54,4 +58,5 @@ function path = collisionAvoid(locationA, locationB, speedA, speedB, goalA, goal
     %         end
         end
     end
+    keyboard
 end
