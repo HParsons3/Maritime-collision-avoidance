@@ -15,4 +15,7 @@ function intersection = findIntersection(A1, A2, B1, B2)
     else
         intersection = 0;
     end
+    if x == A1(1) || x == A2(1) || x == B1(1) || x == B2(1)
+        intersection = 0;
+    end
 end

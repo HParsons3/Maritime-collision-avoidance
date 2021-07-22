@@ -1,10 +1,10 @@
 clear all
 close all
 
-startA = [-0.05,2];
-startB = [-0.05,0];
-goalA = [0.05,0];
-goalB = [0.05,2];
+startA = [1,1];
+startB = [2,1];
+goalA = [2,2];
+goalB = [1,2];
 speedA = 0.25;
 speedB = 0.25;
 startloc = [startA;startB];
@@ -102,7 +102,8 @@ function runSim2(startloc, goalloc, speed)
 %                                    keyboard
                                     if (theta(n)-theta(j) <= -190 && theta(n)-theta(j) > -315) || theta(n)-theta(j) >= 45 && theta(n)-theta(j) < 170
                                         intersecttype = 1; %Starboard: Ship n must move
-                                        location(n,:) = locationold(n,:); %Step back
+                                        location(j,:) = locationold(j,:); %Step back
+                                        location(n,:) = locationold(n,:);
                                         startnode = [location(n,:),0];
                                         keyboard
                                         avoidpath = collisionAvoid(location(n,:), location(j,:), speed(n), speed(j), path(n,:,t+1), goalloc(j,:), 1, startnode);
@@ -122,7 +123,8 @@ function runSim2(startloc, goalloc, speed)
                                         end
                                         
                                     elseif abs(theta(n)-theta(j)) >= 170 && abs(theta(n)-theta(j)) < 190
-                                        location(n,:) = locationold(n,:); %Step back
+                                        location(j,:) = locationold(j,:); %Step back
+                                        location(n,:) = locationold(n,:);
                                         startnode = [location(n,:),0];
                                         keyboard
                                         avoidpath = collisionAvoid(location(n,:), location(j,:), speed(n), speed(j), path(n,:,t+1), goalloc(j,:), 1, startnode);
@@ -141,6 +143,7 @@ function runSim2(startloc, goalloc, speed)
                                             path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
                                         end
                                         location(j,:) = locationold(j,:); %Step back
+                                        location(n,:) = locationold(n,:);
                                         startnode = [location(j,:),0];
                                         keyboard
                                         avoidpath = collisionAvoid(location(j,:), location(n,:), speed(j), speed(n), path(j,:,t+1), path(n,:,t+1), 1, startnode);
@@ -162,6 +165,7 @@ function runSim2(startloc, goalloc, speed)
                                     elseif abs(theta(n)-theta(j)) >= -45 && abs(theta(n)-theta(j)) < 45
                                         intersecttype = 3; %Overtake: ship j must move
                                         location(j,:) = locationold(j,:); %Step back
+                                        location(n,:) = locationold(n,:);
                                         startnode = [location(j,:),0];
                                         keyboard
                                         avoidpath = collisionAvoid(location(j,:), location(n,:), speed(j), speed(n), path(j,:,t+1), goalloc(n,:), 1, startnode);
@@ -180,14 +184,17 @@ function runSim2(startloc, goalloc, speed)
                                             path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
                                         end
                                     else
+                                        keyboard
                                         intersecttype = 4; %Port: Ship j must move
                                         location(j,:) = locationold(j,:); %Step back
+                                        location(n,:) = locationold(n,:);
                                         startnode = [location(j,:),0];
+                                        endnode = [path(j,:,t+1),0];
                                         avoidpath = [0,0];
                                         watchdog = 1;
                                         while height(avoidpath) == 1 && watchdog < 50
-                                            keyboard
-                                            avoidpath = collisionAvoid(location(j,:), location(n,:), speed(j), speed(n), path(j,:,t+1), goalloc(n,:), 1, startnode);
+                                            %keyboard
+                                            avoidpath = collisionAvoid(location(j,:), location(n,:), path(j,:,t+1), goalloc(n,:), 1, 1, startnode, endnode, 1);
                                             watchdog = watchdog+1;
                                      %       keyboard
                                         end
