@@ -3,7 +3,7 @@
 %uses RRT* to build a new path for the entity that must move.
 
 
-function relaxedpath = collisionAvoid(locationA, locationB, goalA, goalB, count1, count2, tree1, tree2, flip)
+function path = collisionAvoid(locationA, locationB, goalA, goalB, count1, count2, tree1, tree2, flip)
     if count1 >= 5000
         keyboard
         path = [0,0];
@@ -54,7 +54,7 @@ function relaxedpath = collisionAvoid(locationA, locationB, goalA, goalB, count1
                 end
                distance = sqrt(((newnode(1)-goalA(1))^2)+((newnode(2)-goalA(2))^2)); %Find distance to goal
                 if mindistance < epsilon %If within 1 time frame
-                    keyboard
+ %                   keyboard
                     if flip > 0
                         j = 1;
                         k = count1;
@@ -105,33 +105,34 @@ function relaxedpath = collisionAvoid(locationA, locationB, goalA, goalB, count1
     %         end
         end
     end
-    forward = path(1,:);
-    i = 1;
-    j = 1;
-    max = height(path);
-    keyboard
-    while j < max
-        relaxedpath(i,:) = forward;
-        backward = path(max,:);
-        n = max;
-        relaxfound = 0;
-        while n ~= 1 && relaxfound == 0
-            if findIntersection(forward,backward,locationB,goalB) == 0 && findIntersection(forward,backward,locationA,locationB) == 0
-                relaxfound = 1;
-            else
-                n = n-1;
-                backward = path(n,:);
-            end
-        end
-        if relaxfound == 1
-            forward = backward;
-            j = n;
-            i = i+1;
-        else
-            i = i+1;
-            j = j+1;
-            forward = path(i,:);
-        end
-    end
-    relaxedpath(i,:) = forward;
+%     forward = path(1,:);
+%     i = 1;
+%     j = 1;
+%     max = height(path);
+%    keyboard
+%     while j < max
+%         relaxedpath(i,:) = forward;
+%         backward = path(max,:);
+%         n = max;
+%         relaxfound = 0;
+%         while n ~= 1 && relaxfound == 0
+%             if findIntersection(forward,backward,locationB,goalB) == 0 && findIntersection(forward,backward,locationA,locationB) == 0
+%                 relaxfound = 1;
+%             else
+%                 n = n-1;
+%                 backward = path(n,:);
+%             end
+%         end
+%         if relaxfound == 1
+%             forward = backward;
+%             j = n;
+%             i = i+1;
+%         else
+%             i = i+1;
+%             j = j+1;
+%             forward = path(i,:);
+%         end
+%     end
+%     keyboard
+%    relaxedpath(i,:) = forward;
 end

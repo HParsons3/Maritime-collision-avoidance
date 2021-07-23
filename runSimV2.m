@@ -5,7 +5,7 @@ startA = [1,1];
 startB = [2,1];
 goalA = [2,2];
 goalB = [1,2];
-speedA = 0.25;
+speedA = 0.27;
 speedB = 0.25;
 startloc = [startA;startB];
 goalloc = [goalA;goalB];
@@ -105,8 +105,10 @@ function runSim2(startloc, goalloc, speed)
                                         location(j,:) = locationold(j,:); %Step back
                                         location(n,:) = locationold(n,:);
                                         startnode = [location(n,:),0];
-                                        keyboard
-                                        avoidpath = collisionAvoid(location(n,:), location(j,:), speed(n), speed(j), path(n,:,t+1), goalloc(j,:), 1, startnode);
+                                        endnode = [path(n,:,t+1),0];
+                                        avoidpath = [0,0];
+                                        avoidpath = collisionAvoid(location(n,:), location(j,:), path(n,:,t+1), goalloc(j,:), 1, 1, startnode, endnode, 1);
+                                        avoidpath = relaxPath(avoidpath, location(n,:), location(j,:), path(n,:,t+1), goalloc(j,:), speed(n), speed(j));
 %                                        keyboard
                                         for k = t+1:i-1
                                             backuppath(k-t,:) = path(n,:,k);
@@ -126,9 +128,11 @@ function runSim2(startloc, goalloc, speed)
                                         location(j,:) = locationold(j,:); %Step back
                                         location(n,:) = locationold(n,:);
                                         startnode = [location(n,:),0];
+                                        endnode = [path(n,:,t+1),0];
+                                        avoidpath = [0,0];
+                                        avoidpath = collisionAvoid(location(n,:), location(j,:), path(n,:,t+1), goalloc(j,:), 1, 1, startnode, endnode, 1);
+                                        avoidpath = relaxPath(avoidpath, location(n,:), location(j,:), path(n,:,t+1), goalloc(j,:), speed(n), speed(j));
                                         keyboard
-                                        avoidpath = collisionAvoid(location(n,:), location(j,:), speed(n), speed(j), path(n,:,t+1), goalloc(j,:), 1, startnode);
-%                                        keyboard
                                         for k = t+1:i-1
                                             backuppath(k-t,:) = path(n,:,k);
                                         end
@@ -139,15 +143,16 @@ function runSim2(startloc, goalloc, speed)
                                             path(n,:,k) = avoidpath(k-(t-1),:);
                                         end
                                         for k = t+(height(avoidpath)):i-2+height(avoidpath)
-%                                            keyboard
                                             path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
                                         end
                                         location(j,:) = locationold(j,:); %Step back
                                         location(n,:) = locationold(n,:);
                                         startnode = [location(j,:),0];
+                                        endnode = [path(j,:,t+1),0];
+                                        avoidpath = [0,0];
+                                        avoidpath = collisionAvoid(location(j,:), location(n,:), path(j,:,t+1), path(n,:,t+1), 1, 1, startnode, endnode, 1);
+                                        avoidpath = relaxPath(avoidpath, location(j,:), location(n,:), path(j,:,t+1), goalloc(n,:), speed(j), speed(n));
                                         keyboard
-                                        avoidpath = collisionAvoid(location(j,:), location(n,:), speed(j), speed(n), path(j,:,t+1), path(n,:,t+1), 1, startnode);
-%                                        keyboard
                                         for k = t+1:i-1
                                             backuppath(k-t,:) = path(j,:,k);
                                         end
@@ -158,8 +163,7 @@ function runSim2(startloc, goalloc, speed)
                                             path(j,:,k) = avoidpath(k-(t-1),:);
                                         end
                                         for k = t+(height(avoidpath)):i-2+height(avoidpath)
-%                                            keyboard
-                                            path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                                            path(j,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
                                         end
                                         intersecttype = 2; %head-on: Both must move
                                     elseif abs(theta(n)-theta(j)) >= -45 && abs(theta(n)-theta(j)) < 45
@@ -167,8 +171,10 @@ function runSim2(startloc, goalloc, speed)
                                         location(j,:) = locationold(j,:); %Step back
                                         location(n,:) = locationold(n,:);
                                         startnode = [location(j,:),0];
-                                        keyboard
-                                        avoidpath = collisionAvoid(location(j,:), location(n,:), speed(j), speed(n), path(j,:,t+1), goalloc(n,:), 1, startnode);
+                                        endnode = [path(j,:,t+1),0];
+                                        avoidpath = [0,0];
+                                        avoidpath = collisionAvoid(location(j,:), location(n,:), path(j,:,t+1), goalloc(n,:), 1, 1, startnode, endnode, 1);
+                                        avoidpath = relaxPath(avoidpath, location(j,:), location(n,:), path(j,:,t+1), goalloc(n,:), speed(j), speed(n));
 %                                        keyboard
                                         for k = t+1:i-1
                                             backuppath(k-t,:) = path(j,:,k);
@@ -184,20 +190,19 @@ function runSim2(startloc, goalloc, speed)
                                             path(n,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
                                         end
                                     else
-                                        keyboard
+%                                        keyboard
                                         intersecttype = 4; %Port: Ship j must move
                                         location(j,:) = locationold(j,:); %Step back
                                         location(n,:) = locationold(n,:);
                                         startnode = [location(j,:),0];
                                         endnode = [path(j,:,t+1),0];
                                         avoidpath = [0,0];
-                                        watchdog = 1;
-                                        while height(avoidpath) == 1 && watchdog < 50
+%                                        while height(avoidpath) == 1 && watchdog < 50
                                             %keyboard
                                             avoidpath = collisionAvoid(location(j,:), location(n,:), path(j,:,t+1), goalloc(n,:), 1, 1, startnode, endnode, 1);
-                                            watchdog = watchdog+1;
+                                            avoidpath = relaxPath(avoidpath, location(j,:), location(n,:), path(j,:,t+1), goalloc(n,:), speed(j), speed(n));
                                      %       keyboard
-                                        end
+%                                        end
 %                                        keyboard
                                         for k = t+1:i-1
                                             backuppath(k-t,:) = path(j,:,k);
@@ -215,7 +220,19 @@ function runSim2(startloc, goalloc, speed)
                                     end
                                     flag1 = n;
                                     flag2 = j;
-                                    
+                                    delete(h1(j));
+                                    delete(h1(n));
+                                    location(n,:) = path(n,:,t);
+                                    location(j,:) = path(j,:,t);
+                                    h1(j) = plot([location(j,1), locationold(j,1)], [location(j,2), locationold(j,2)]);
+                                    [~,~,d] = size(path);
+                                    for x = 1:d
+                                        line(x,:) = [path(j,1,x),path(j,2,x)];
+                                        if line(x,:) == [0,0]
+                                            line(x,:) = line(x-1,:);
+                                        end
+                                    end
+                                    h2(j) = plot(line(:,1),line(:,2),'.');
                                 end
                             end
                         end
