@@ -1,4 +1,4 @@
-function path = buildPath(startpoint, goalpoint, speed)
+function [path, theta] = buildPath(startpoint, goalpoint, speed)
     o = goalpoint(2)-startpoint(2); 
     a = goalpoint(1)-startpoint(1);
 %   h = sqrt(a^2+o^2); %Distance to target
@@ -17,7 +17,8 @@ function path = buildPath(startpoint, goalpoint, speed)
     readyflag = 0;
     while readyflag == 0 && i < 100
         readyflag = 1;
-        path(i,:) = [startpoint(1)+sind(theta)*speed*i, startpoint(2)+cosd(theta)*speed*i];
+        path(i,:) = [startpoint(1)+sind(theta)*speed*i, startpoint(2)+cosd(theta)*speed*i]; %Move along the line step by step
+        %If the goal has been passed, remain on the goal point
         if theta >= 0 && theta < 90 
             if path(i,1) >= goalpoint(1) && path(i,2) >= goalpoint(2)
                 path(i,:) = goalpoint(:);

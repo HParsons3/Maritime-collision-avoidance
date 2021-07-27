@@ -15,6 +15,8 @@ function intersection = findIntersection(A1, A2, B1, B2)
     else
         intersection = 0;
     end
+    %If the lines stem from the same point, they can incorrectly show as
+    %intersecting. This should prevent that.
     if ((x <= A1(1)+0.0001 && x >= A1(1)-0.0001) || (x <= A2(1)+0.0001 && x >= A2(1)-0.0001) || (x <= B1(1)+0.0001 && x >= B1(1)-0.0001) || (x <= B2(1)+0.0001 && x >= B2(1)-0.0001)) && ((y <= A1(2)+0.0001 && y >= A1(2)-0.0001) || (y <= A2(2)+0.0001 && y >= A2(2)-0.0001) || (y <= B1(2)+0.0001 && y >= B1(2)-0.0001) || (y <= B2(2)+0.0001 && y >= B2(2)-0.0001))
         intersection = 0;
     end
