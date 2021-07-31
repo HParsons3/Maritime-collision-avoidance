@@ -2,10 +2,10 @@ clear all
 close all
 
 %Set Parameters
-startA = [2,1]; %Start positions
-startB = [1,1]; 
-goalA = [1,2]; %Goal positions
-goalB = [2,2];
+startA = [-0.1,0]; %Start positions
+startB = [0.1,0]; 
+goalA = [0.1,5]; %Goal positions
+goalB = [-0.1,5];
 speedA = 0.25; %Speeds
 speedB = 0.25;
 startloc = [startA;startB];
@@ -14,6 +14,8 @@ speed = [speedA,speedB];
 runSim2(startloc,goalloc,speed);
 
 function runSim2(startloc, goalloc, speed)
+    points3d(1,:,:) = [0,0];
+    points3d(2,:,:) = [0,0];
     hold on 
     xlim([0,3]) %Set up graph- size changes may be necessary
     ylim([0,3])
@@ -40,30 +42,36 @@ function runSim2(startloc, goalloc, speed)
         h1(n) = plot(line(:,1),line(:,2),'.');
     end
     flag1 = 0;
+    keyboard
     for t = 1:(100-1) %Until the last path is finished, or it times out
         for n = 1:2 %For every entity
-            overrun = zeros(n,1);
             if t > 1 %Start saving old locations after first tick
                 [points, locationold, location, path] = movementSim(locationold, location, speed, path, theta, goalloc, i, j, n, t);
+%                 [h,~] = size(points);
+%                 for i = 1:h
+%                     points3d(n,i,:) = points(i,:);
+%                 end
 %                 h2(n) = plot(points(:,1), points(:,2), '-');
             else
                 location(n,:) = path(n,:,t);
                 locationold = startloc;
             end
         end
-%         for n = 1:2
-%             for x = 1:d
-%                 line(x,:) = [path(n,1,x),path(n,2,x)];
-%                 if line(x,:) == [0,0]
-%                     line(x,:) = line(x-1,:);
-%                 end
+        [~,~,d] = size(path); %Plot the expected path
+%         [~,w,~] = size(points3d);
+        for n = 1:2
+            for x = 1:d
+                line(x,:) = [path(n,1,x),path(n,2,x)];
+                if line(x,:) == [0,0]
+                    line(x,:) = line(x-1,:);
+                end
+            end
+            h1(n) = plot(line(:,1),line(:,2),'.');
+        end
+%             if t > 1 && points(height(points),1) ~= 0
+%                 h2(n) = plot(points(:,1), points3d(:,2), '-');
 %             end
-%             h1(n) = plot(line(:,1),line(:,2),'.');
 %         end
-%        keyboard %To allow watching the movements step by step
-%        delete(h1);
-%         if t > 1
-%             delete(h2);
-%         end
+        keyboard
     end
 end
