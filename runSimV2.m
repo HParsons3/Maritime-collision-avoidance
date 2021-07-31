@@ -17,8 +17,8 @@ function runSim2(startloc, goalloc, speed)
     points3d(1,:,:) = [0,0];
     points3d(2,:,:) = [0,0];
     hold on 
-    xlim([0,3]) %Set up graph- size changes may be necessary
-    ylim([0,3])
+    xlim([-1,5]) %Set up graph- size changes may be necessary
+    ylim([-1,5])
     scatter(startloc(1,1),startloc(1,2),'dr') %Show starting positions
     scatter(startloc(2,1),startloc(2,2),'db')
     scatter(goalloc(1,1),goalloc(1,2),'or')
