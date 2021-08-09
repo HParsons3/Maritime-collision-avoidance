@@ -8,7 +8,6 @@ function path = collisionAvoid(locationA, locationB, goalA, goalB, count1, count
         keyboard
         path = [0,0];
     else
-        count1
         if count1 == 1
             %keyboard
         end

@@ -1,3 +1,7 @@
+%This function determines if the ship would move past a point on the path
+%due to its speed, and if so, locks it to the point so it doesn't deviate
+%from the path.
+
 function [location, overrun] = snapToTarget(location, target, theta)
     if theta >= 0 && theta < 90 
         if location(1) >= target(1) && location(2) >= target(2)
