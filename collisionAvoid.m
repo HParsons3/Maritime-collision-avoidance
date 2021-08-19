@@ -95,5 +95,9 @@ function path = collisionAvoid(locationA, locationB, goalA, goalB, count1, count
                 end
         end
     end
-    keyboard
+    array1 = [tree1(:,1,:), tree1(:,2,:)];
+    array2 = [tree2(:,1,:), tree2(:,2,:)];
+    plot(array1(:,1),array1(:,2), 'om');
+    plot(array2(:,1),array2(:,2),'om');
+    plot(path(:,1),path(:,2),'-m');
 end
