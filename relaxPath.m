@@ -40,7 +40,7 @@ function finalpath = relaxPath(path, locationA, locationB, goalA, goalB, speedA,
         finalpath = [finalpath(:,:);pathextra(:,:)];
         n = n+1;
     end
-    pathextra = buildPath(relaxedpath(n,:), goalA,speedA); %Path to the goal
+    pathextra = buildPath(relaxedpath(n,:), goalA, speedA); %Path to the goal
     finalpath = [finalpath(:,:);pathextra(:,:)];
     finalpath(height(finalpath),:) = []; %Delete the goal point to prevent it duplicating
 end

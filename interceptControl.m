@@ -13,10 +13,10 @@ function [path, locationold, location, collision] = interceptControl(locationold
             location(ships,:) = locationold(ships,:); %Step back
             location(shipID,:) = locationold(shipID,:); 
             startnode = [location(shipID,:),0]; %Set starting and ending nodes for exploration tree
-            endnode = [path(shipID,:,t+1),0];
+            endnode = [goalloc(shipID,:), 0];
             avoidpath = [0,0];
             avoidpath = collisionAvoid(location(shipID,:), location(ships,:), path(shipID,:,t+1), goalloc(ships,:), 1, 1, startnode, endnode, 1); %Compute collision avoidance path
-            avoidpath = relaxPath(avoidpath, location(shipID,:), location(ships,:), path(shipID,:,t+1), goalloc(ships,:), speed(shipID), speed(ships)); %Smooth path
+            avoidpath = relaxPath(avoidpath, location(shipID,:), location(ships,:), goalloc(shipID,:), goalloc(ships,:), speed(shipID), speed(ships)); %Smooth path
             [~,~,h] = size(path);
             for k = t+1:h-1 %integrate new path into the old path
                 backuppath(k-t,:) = path(shipID,:,k);
@@ -28,7 +28,7 @@ function [path, locationold, location, collision] = interceptControl(locationold
                 path(shipID,:,k) = avoidpath(k-(t-1),:);
             end
             for k = t+(height(avoidpath)):h-2+height(avoidpath)
-                path(shipID,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                path(shipID,:,k) = goalloc(shipID,:);
             end
 
         elseif abs(theta(shipID)-theta(ships)) >= 157.5 && abs(theta(shipID)-theta(ships)) < 202.5
@@ -36,10 +36,10 @@ function [path, locationold, location, collision] = interceptControl(locationold
             location(ships,:) = locationold(ships,:); %Step back
             location(shipID,:) = locationold(shipID,:);
             startnode = [location(shipID,:),0]; %Set starting and ending nodes for exploration tree
-            endnode = [path(shipID,:,t+1),0];
+            endnode = [goalloc(shipID,:),0];
             avoidpath = [0,0];
             avoidpath = collisionAvoid(location(shipID,:), location(ships,:), path(shipID,:,t+1), goalloc(ships,:), 1, 1, startnode, endnode, 1); %Compute collision avoidance path
-            avoidpath = relaxPath(avoidpath, location(shipID,:), location(ships,:), path(shipID,:,t+1), goalloc(ships,:), speed(shipID), speed(ships)); %Smooth path
+            avoidpath = relaxPath(avoidpath, location(shipID,:), location(ships,:), goalloc(shipID,:), goalloc(ships,:), speed(shipID), speed(ships)); %Smooth path
             for k = t+1:pathsize-1 %integrate new path into the old path
                 backuppath(k-t,:) = path(shipID,:,k);
             end
@@ -50,15 +50,15 @@ function [path, locationold, location, collision] = interceptControl(locationold
                 path(shipID,:,k) = avoidpath(k-(t-1),:);
             end
             for k = t+(height(avoidpath)):pathsize-2+height(avoidpath)
-                path(shipID,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                path(shipID,:,k) = goalloc(shipID,:);
             end
             location(ships,:) = locationold(ships,:); %Step back
             location(shipID,:) = locationold(shipID,:);
             startnode = [location(ships,:),0]; %Set starting and ending nodes for exploration tree
-            endnode = [path(ships,:,t+1),0];
+            endnode = [goalloc(ships,:),0];
             avoidpath = [0,0];
             avoidpath = collisionAvoid(location(ships,:), location(shipID,:), path(ships,:,t+1), path(shipID,:,t+1), 1, 1, startnode, endnode, 1); %Compute collision avoidance path
-            avoidpath = relaxPath(avoidpath, location(ships,:), location(shipID,:), path(ships,:,t+1), goalloc(shipID,:), speed(ships), speed(shipID)); %Smooth path
+            avoidpath = relaxPath(avoidpath, location(ships,:), location(shipID,:), goalloc(ships,:), goalloc(shipID,:), speed(ships), speed(shipID)); %Smooth path
             for k = t+1:pathsize-1 %integrate new path into the old path
                 backuppath(k-t,:) = path(ships,:,k);
             end
@@ -69,38 +69,60 @@ function [path, locationold, location, collision] = interceptControl(locationold
                 path(ships,:,k) = avoidpath(k-(t-1),:);
             end
             for k = t+(height(avoidpath)):pathsize-2+height(avoidpath)
-                path(ships,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                path(ships,:,k) = goalloc(ships,:);
             end
         elseif (abs(theta(shipID)-theta(ships)) >= 0 && abs(theta(shipID)-theta(ships)) < 67.5) || (abs(theta(shipID)-theta(ships)) >= 292.5 && abs(theta(shipID)-theta(ships)) < 360)
-            %Overtake: ship j must move
+            %Overtake: faster ship must move, or ship J
             location(ships,:) = locationold(ships,:); %Step back
             location(shipID,:) = locationold(shipID,:);
-            startnode = [location(ships,:),0]; %Set starting and ending nodes for exploration tree
-            endnode = [path(ships,:,t+1),0];
-            avoidpath = [0,0];
-            avoidpath = collisionAvoid(location(ships,:), location(shipID,:), path(ships,:,t+1), goalloc(shipID,:), 1, 1, startnode, endnode, 1); %Compute collision avoidance path
-            avoidpath = relaxPath(avoidpath, location(ships,:), location(shipID,:), path(ships,:,t+1), goalloc(shipID,:), speed(ships), speed(shipID)); %Smooth path
-            for k = t+1:pathsize-1 %integrate new path into the old path
-                backuppath(k-t,:) = path(ships,:,k);
-            end
-            for k = t:(t+(height(avoidpath)-1))
-                path(ships,:,k) = avoidpath(k-(t-1),:);
-            end
-            for k = t:(t+(height(avoidpath)-1))
-                path(ships,:,k) = avoidpath(k-(t-1),:);
-            end
-            for k = t+(height(avoidpath)):pathsize-2+height(avoidpath)
-                path(ships,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+            if speed(ships) >= speed(shipID) 
+                startnode = [location(ships,:),0]; %Set starting and ending nodes for exploration tree
+                endnode = [goalloc(ships,1), goalloc(ships,2),0];
+                avoidpath = [0,0];
+                avoidpath = collisionAvoid(location(ships,:), location(shipID,:), path(ships,:,t+1), goalloc(shipID,:), 1, 1, startnode, endnode, 1); %Compute collision avoidance path
+                avoidpath = relaxPath(avoidpath, location(ships,:), location(shipID,:), goalloc(ships,:), goalloc(shipID,:), speed(ships), speed(shipID)); %Smooth path
+                for k = t+1:pathsize-1 %integrate new path into the old path
+                    backuppath(k-t,:) = path(ships,:,k);
+                end
+                for k = t:(t+(height(avoidpath)-1))
+                    path(ships,:,k) = avoidpath(k-(t-1),:);
+                end
+                for k = t:(t+(height(avoidpath)-1))
+                    path(ships,:,k) = avoidpath(k-(t-1),:);
+                end
+                for k = t+(height(avoidpath)):pathsize-2+height(avoidpath)
+                    path(ships,:,k) = goalloc(ships,:);
+                end
+            else
+                startnode = [location(shipID,:),0]; %Set starting and ending nodes for exploration tree
+                endnode = [goalloc(shipID,1), goalloc(shipID,2),0];
+                avoidpath = [0,0];
+                keyboard
+                avoidpath = collisionAvoid(location(shipID,:), location(ships,:), path(shipID,:,t+1), goalloc(ships,:), 1, 1, startnode, endnode, 1); %Compute collision avoidance path
+                avoidpath = relaxPath(avoidpath, location(shipID,:), location(ships,:), goalloc(shipID,:), goalloc(ships,:), speed(shipID), speed(ships)); %Smooth path
+                [~,~,h] = size(path);
+                for k = t+1:h-1 %integrate new path into the old path
+                    backuppath(k-t,:) = path(shipID,:,k);
+                end
+                for k = t:(t+(height(avoidpath)-1))
+                    path(shipID,:,k) = avoidpath(k-(t-1),:);
+                end
+                for k = t:(t+(height(avoidpath)-1))
+                    path(shipID,:,k) = avoidpath(k-(t-1),:);
+                end
+                for k = t+(height(avoidpath)):pathsize-2+height(avoidpath)
+                    path(shipID,:,k) = goalloc(shipID,:);
+                end
             end
         else
             %Port: Ship j must move
             location(ships,:) = locationold(ships,:); %Step back
             location(shipID,:) = locationold(shipID,:);
             startnode = [location(ships,:),0]; %Set starting and ending nodes for exploration tree
-            endnode = [path(ships,:,t+1),0];
+            endnode = [goalloc(ships,:),0];
             avoidpath = [0,0];
             avoidpath = collisionAvoid(location(ships,:), location(shipID,:), path(ships,:,t+1), goalloc(shipID,:), 1, 1, startnode, endnode, 1); %Compute collision avoidance path
-            avoidpath = relaxPath(avoidpath, location(ships,:), location(shipID,:), path(ships,:,t+1), goalloc(shipID,:), speed(ships), speed(shipID)); %Smooth path
+            avoidpath = relaxPath(avoidpath, location(ships,:), location(shipID,:), goalloc(ships,:), goalloc(shipID,:), speed(ships), speed(shipID)); %Smooth path
             [~,~,h] = size(path);
             for k = t+1:h-1 %integrate new path into the old path
                 backuppath(k-t,:) = path(ships,:,k);
@@ -112,7 +134,7 @@ function [path, locationold, location, collision] = interceptControl(locationold
                 path(ships,:,k) = avoidpath(k-(t-1),:);
             end
             for k = t+(height(avoidpath)):h-2+height(avoidpath)
-                path(ships,:,k) = backuppath(k+1-(t+height(avoidpath)),:);
+                path(ships,:,k) = goalloc(ships,:);
             end
         end
         location(shipID,:) = path(shipID,:,t);

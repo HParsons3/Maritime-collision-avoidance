@@ -2,10 +2,10 @@ clear all
 close all
 
 %Set Parameters
-goalA = [3,0]; %Start positions
-startB = [2.9,0]; 
-startA = [0.1,0]; %Goal positions
-goalB = [0,0];
+goalA = [1,2]; %Start positions
+startB = [1,1]; 
+startA = [2,1]; %Goal positions
+goalB = [2,2];
 speedA = 0.25; %Speeds
 speedB = 0.25;
 startloc = [startA;startB];

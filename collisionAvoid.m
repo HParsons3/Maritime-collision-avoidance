@@ -95,4 +95,5 @@ function path = collisionAvoid(locationA, locationB, goalA, goalB, count1, count
                 end
         end
     end
+    keyboard
 end
