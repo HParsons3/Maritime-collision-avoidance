@@ -10,9 +10,9 @@ function [points, locationold, location, path] = movementSim(locationold, locati
         a = location(shipID,1)-locationold(shipID,1);
     %   h = sqrt(a^2+o^2); %Distance to target
         theta(shipID) = atand(o/a); 
-        if a <= 0 && o <= 0 %Angle to target
+        if a < 0 && o <= 0 %Angle to target
             theta(shipID) = 270-theta(shipID);
-        elseif a <= 0 && o >= 0
+        elseif a < 0 && o >= 0
             theta(shipID) = 270-theta(shipID);
         elseif a >= 0 && o <= 0
             theta(shipID) = 90-theta(shipID);
@@ -53,9 +53,9 @@ function [points, locationold, location, path] = movementSim(locationold, locati
                                 a = locationdir(1)-locationold(shipID,1);
                             %   h = sqrt(a^2+o^2); %Distance to target
                                 theta(shipID) = atand(o/a); 
-                                if a <= 0 && o <= 0 %Angle to target
+                                if a < 0 && o <= 0 %Angle to target
                                     theta(shipID) = 270-theta(shipID);
-                                elseif a <= 0 && o >= 0
+                                elseif a < 0 && o >= 0
                                     theta(shipID) = 270-theta(shipID);
                                 elseif a >= 0 && o <= 0
                                     theta(shipID) = 90-theta(shipID);
@@ -90,7 +90,7 @@ function [points, locationold, location, path] = movementSim(locationold, locati
                     end
                     points = [locationold(shipID,:); location(shipID,:)];
                 end
-                if t > 1 && points(height(points),1) ~= 0
+                if t > 1 && (points(height(points),1) ~= 0 || points(height(points),2) ~= 0)
                     h2(shipID) = plot(points(:,1), points(:,2), '-');
                 end
 
@@ -117,9 +117,9 @@ function [points, locationold, location, path] = movementSim(locationold, locati
                                 a = locationdir(1)-locationold(shipID,1);
                             %   h = sqrt(a^2+o^2); %Distance to target
                                 theta(shipID) = atand(o/a); 
-                                if a <= 0 && o <= 0 %Angle to target
+                                if a < 0 && o <= 0 %Angle to target
                                     theta(shipID) = 270-theta(shipID);
-                                elseif a <= 0 && o >= 0
+                                elseif a < 0 && o >= 0
                                     theta(shipID) = 270-theta(shipID);
                                 elseif a >= 0 && o <= 0
                                     theta(shipID) = 90-theta(shipID);
@@ -143,7 +143,7 @@ function [points, locationold, location, path] = movementSim(locationold, locati
                     end
                     points = [locationold(shipID,:); location(shipID,:)];
                 end
-                if t > 1 && points(height(points),1) ~= 0
+                if (points(height(points),1) ~= 0 || points(height(points),2) ~= 0)
                     h2(shipID) = plot(points(:,1), points(:,2), '-');
                 end
         end

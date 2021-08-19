@@ -3,9 +3,9 @@ function [path, theta] = buildPath(startpoint, goalpoint, speed)
     a = goalpoint(1)-startpoint(1);
 %   h = sqrt(a^2+o^2); %Distance to target
     theta = atand(o/a); 
-    if a <= 0 && o <= 0 %Angle to target
+    if a < 0 && o <= 0 %Angle to target
         theta = 270-theta;
-    elseif a <= 0 && o >= 0
+    elseif a < 0 && o >= 0
         theta = 270-theta;
     elseif a >= 0 && o <= 0
         theta = 90-theta;

@@ -2,10 +2,10 @@ clear all
 close all
 
 %Set Parameters
-goalA = [-0.1,0]; %Start positions
-startB = [0.1,0]; 
-startA = [0.1,5]; %Goal positions
-goalB = [-0.1,5];
+goalA = [3,0]; %Start positions
+startB = [2.9,0]; 
+startA = [0.1,0]; %Goal positions
+goalB = [0,0];
 speedA = 0.25; %Speeds
 speedB = 0.25;
 startloc = [startA;startB];
@@ -14,8 +14,6 @@ speed = [speedA,speedB];
 runSim2(startloc,goalloc,speed);
 
 function runSim2(startloc, goalloc, speed)
-    points3d(1,:,:) = [0,0];
-    points3d(2,:,:) = [0,0];
     hold on 
     xlim([-1,5]) %Set up graph- size changes may be necessary
     ylim([-1,5])
